@@ -42,9 +42,7 @@
 
 ### 서비스 환경
 
-- 브라우저 대응: IE 9+
 - 반응형: 모바일 , 태블릿, 데스크탑
-- 접근성
 - Mobile First
 - Back End Developer 없이 작업하기에 Firebase를 사용
 
@@ -58,6 +56,7 @@
 - Vuex
 - Webpack
 - Firebase
+- axios
 
 ---
 
@@ -70,18 +69,3 @@
 
 ---
 
-### Routing Table
-
-| 1DEPTH | 2DEPTH        | PATH           |
-| ------ | ------------- | -------------- |
-| 메인     |               | /home          |
-| 회원가입   |               | /signup        |
-| 로그인    |               | /signin        |
-| 회원탈퇴   |               | /memberLeave   |
-| 리스트    |               | /list          |
-|        | 상세            | /post          |
-| 마이페이지  |               | /mypage        |
-|        | 회원정보수정        | /mypage/modify |
-|        | 내가 작성한 여행 리스트 | /mypage/mylist |
-
----

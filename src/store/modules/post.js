@@ -420,21 +420,15 @@ export default {
     }
   },
   actions: {
+    // 이미지 정보 업로드
     setImageToStorage ({commit, state}, payload) {
-      var date = new Date()
-      date = date.getFullYear() + (date.getMonth() + 1).toString() + date.getDate() + date.getHours() + date.getMinutes() + date.getSeconds()
-      var uploadName = payload.id + '_' + payload.type + '_' + date + '_' + payload.image.name
-      var storageRef = firebase.storage.ref('/Write/' + uploadName)
+      // 이미지 업로드 진행중 표시
       commit('imageUploadProgress', {'state': 'progress', 'type': payload.type})
-      // if (state.title_img_url !== '') {
-      //   let storageRef = firebase.storage.ref('/Write/' + state.temp_write_data.title_img_name)
-      //   storageRef.delete()
-      // }
-      storageRef.put(payload.image).then(snapshot => {
-        let imgInfo = { 'url': snapshot.downloadURL, 'name': uploadName }
-        payload.type === 'title' ? commit('setTitleImgUrl', imgInfo) : commit('setContentImgUrl', imgInfo)
-        commit('imageUploadProgress', {'state': 'done', 'type': payload.type})
-      })
+      let imgInfo = {'url': payload.image, 'name': payload.name}
+      // payload.type으로 타이틀의 이미지와 본문 이미지의 구분
+      payload.type === 'title' ? commit('setTitleImgUrl', imgInfo) : commit('setContentImgUrl', imgInfo)
+      // 이미지 업로드 완료 표시
+      commit('imageUploadProgress', {'state': 'done', 'type': payload.type})
     },
     saveWriteData (context, payload) {
       const userApi = 'https://traveller-in-blog.firebaseio.com/users.json'

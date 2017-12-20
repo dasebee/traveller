@@ -136,9 +136,26 @@
           this.$store.commit('inputValueCheck', type)
         }
       },
+      checkImage (file) {
+        if (/.*\.(gif)|(jpeg)|(jpg)|(png)$/.test(file.name.toLowerCase())) {
+          return true
+        }
+      },
+      // 타이틀/본문 이미지 업로드
       imageUpload (type) {
-        let payload = {'image': event.target.files[0], 'type': type, 'id': this.$route.query.id}
-        this.$store.dispatch('setImageToStorage', payload)
+        // 사용자가 선택한 이미지 파일
+        let file = event.target.files[0]
+        let reader = new FileReader()
+        if (this.checkImage(file)) {
+          this.file = file
+          // 파일을 데이터 URL로 표시
+          reader.readAsDataURL(file)
+          // 파일 읽기가 완료되면
+          reader.onload = data => {
+            let payload = {'image': data.srcElement.result, 'type': type, 'name': this.file.name}
+            this.$store.dispatch('setImageToStorage', payload) // store-post
+          }
+        }
       },
       setSelectedItem () {
         let payload = {'checked': event.target.checked, 'id': event.target.id}

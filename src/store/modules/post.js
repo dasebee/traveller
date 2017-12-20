@@ -25,16 +25,28 @@ export default {
     // show 관련된 것을 토글
     show_write_country: false,
     show_write_city: false,
-    title_error_message: '제목은 30자 이하로 작성해주세요.',
-    show_title_error_message: false,
-    tag_error_message: '태그 내용을 #으로 구분해주세요.',
-    show_tag_error_message: false,
-    date_error_message: '',
-    show_date_error_message: false,
-    write_error_message: '',
-    content_error_message: '텍스트를 입력해주세요.',
-    show_content_error_message: false,
-    show_write_error_message: false,
+    errors: {
+      title: {
+        show: false,
+        message: '제목은 30자 이하로 작성해주세요.'
+      },
+      tag: {
+        show: false,
+        message: '태그 내용을 #으로 구분해주세요.'
+      },
+      date: {
+        show: false,
+        message: ''
+      },
+      write: {
+        show: false,
+        message: ''
+      },
+      content: {
+        show: false,
+        message: '텍스트를 입력해주세요'
+      }
+    },
     image_progress_message: '이미지를 업로드 하고있습니다.',
     show_title_image_progress: false,
     show_content_image_progress: false,
@@ -70,34 +82,34 @@ export default {
       return state.selected_write_country_key
     },
     titleErrorMessage (state) {
-      return state.title_error_message
+      return state.errors.title.message
     },
     showTitleErrorMessage (state) {
-      return state.show_title_error_message
+      return state.errors.title.show
     },
     tagErrorMessage (state) {
-      return state.tag_error_message
+      return state.errors.tag.message
     },
     showTagErrorMessage (state) {
-      return state.show_tag_error_message
+      return state.errors.tag.show
     },
     dateErrorMessage (state) {
-      return state.date_error_message
+      return state.errors.date.message
     },
     showDateErrorMessage (state) {
-      return state.show_date_error_message
+      return state.errors.date.show
     },
     writeErrorMessage (state) {
-      return state.write_error_message
+      return state.errors.write.message
     },
     showWriteErrorMessage (state) {
-      return state.show_write_error_message
+      return state.errors.write.show
     },
     contentErrorMessage (state) {
-      return state.content_error_message
+      return state.errors.content.message
     },
     showContentErrorMessage (state) {
-      return state.show_content_error_message
+      return state.errors.content.show
     },
     imageProgressMessage (state) {
       return state.image_progress_message
@@ -110,7 +122,7 @@ export default {
     }
   },
   mutations: {
-    // 수정
+    // 수정 초기화
     setEditData (state, payload) {
       // 타이틀
       state.write_title_value = payload.data.title
@@ -127,14 +139,11 @@ export default {
       state.temp_date.end = payload.data.end_date
       // 이미지와 텍스트
       state.write_contents_data = payload.data.contents
-      // 에러 메세지
-      state.show_title_error_message = false
+      // 셀렉트 상자 표시
       state.show_write_country = false
       state.show_write_city = false
-      state.show_tag_error_message = false
-      state.show_date_error_message = false
-      state.show_content_error_message = false
-      state.show_write_error_message = false
+      // 에러 메세지들 show = false
+      Object.keys(state.errors).forEach(key => { state.errors[key].show = false })
       state.show_title_image_progress = false
       state.show_content_image_progress = false
       state.error_check_before_post.title = true
@@ -144,14 +153,14 @@ export default {
     // 타이틀
     setTitleValue (state, payload) {
       if (event.target.value.length > 30) {
-        state.show_title_error_message = true
+        state.errors.title.show = true
         state.error_check_before_post.title = false
-        setTimeout(() => { state.show_title_error_message = false }, 2500)
+        setTimeout(() => { state.errors.title.show = false }, 2500)
         return
       }
       state.write_title_value = payload
       state.temp_write_data.title = payload
-      state.show_title_error_message = false
+      state.errors.title.show = false
       state.error_check_before_post.title = true
     },
     setTitleImgUrl (state, payload) {
@@ -188,25 +197,25 @@ export default {
       state.temp_write_data.tag = payload.split('#')
       state.temp_write_data.tag.shift()
       if (state.temp_write_data.tag.length === 0) {
-        state.show_tag_error_message = true
+        state.errors.tag.show = true
         state.error_check_before_post.tag = false
-        setTimeout(() => { state.show_tag_error_message = false }, 2500)
+        setTimeout(() => { state.errors.tag.show = false }, 2500)
         return
       } else if (event.target.value.slice(0, 1) !== '#') {
-        state.show_tag_error_message = true
+        state.errors.tag.show = true
         state.error_check_before_post.tag = false
-        setTimeout(() => { state.show_title_error_message = false }, 2500)
+        setTimeout(() => { state.errors.title.show = false }, 2500)
         return
       } else {
         for (let i = state.temp_write_data.tag.length; i--;) {
           if (state.temp_write_data.tag[i] === '') {
-            state.show_tag_error_message = true
+            state.errors.tag.show = true
             state.error_check_before_post.tag = false
-            setTimeout(() => { state.show_title_error_message = false }, 2500)
+            setTimeout(() => { state.errors.title.show = false }, 2500)
             return
           }
         }
-        state.show_tag_error_message = false
+        state.errors.tag.show = false
         state.error_check_before_post.tag = true
       }
     },
@@ -290,22 +299,22 @@ export default {
           if (today >= start.split('-').join('') && today >= end.split('-').join('')) {
             state.temp_write_data.start_date = start
             state.temp_write_data.end_date = end
-            state.date_error_message = ''
-            state.show_date_error_message = false
+            state.errors.date.message = ''
+            state.errors.date.show = false
             state.error_check_before_post.date = true
           } else {
-            state.date_error_message = '* 여행 날짜는 오늘 이후가 될 수 없습니다.'
-            state.show_date_error_message = true
+            state.errors.date.message = '* 여행 날짜는 오늘 이후가 될 수 없습니다.'
+            state.errors.date.show = true
             state.error_check_before_post.date = false
           }
         } else {
-          state.date_error_message = '* 여행 시작날짜는 종료날짜의 이후가 될 수 없습니다.'
-          state.show_date_error_message = true
+          state.errors.date.message = '* 여행 시작날짜는 종료날짜의 이후가 될 수 없습니다.'
+          state.errors.date.show = true
           state.error_check_before_post.date = false
         }
       } else {
-        state.date_error_message = '* 여행 시작날짜와 종료 날짜를 모두 입력해주세요.'
-        state.show_date_error_message = true
+        state.errors.date.message = '* 여행 시작날짜와 종료 날짜를 모두 입력해주세요.'
+        state.errors.date.show = true
         state.error_check_before_post.date = false
       }
     },
@@ -329,7 +338,7 @@ export default {
       }
       let contentText = {key: 'text'}
       contentText.value = ''
-      state.show_content_error_message = true
+      state.errors.content.show = true
       state.error_check_before_post.content = false
       if (Object.prototype.toString.call(state.write_contents_data).slice(8, -1).toLowerCase() !== 'array') {
         state.write_contents_data = []
@@ -339,7 +348,7 @@ export default {
     },
     addContentsText (state, payload) {
       if (event.target.value.length > 0) {
-        state.show_content_error_message = false
+        state.errors.content.show = false
         state.error_check_before_post.content = true
       }
       state.write_contents_data[payload].value = event.target.value
@@ -362,19 +371,19 @@ export default {
     printErrorMessage (state, payload) {
       let message = []
       if (payload === 'all') {
-        state.write_error_message = '내용을 모두 입력 해주세요.'
+        state.errors.write.message = '내용을 모두 입력 해주세요.'
       } else if (payload === 'error') {
-        state.write_error_message = '규칙에 맞게 내용을 입력해주세요.'
+        state.errors.write.message = '규칙에 맞게 내용을 입력해주세요.'
       } else {
         for (var i = 0, l = payload.length; i < l; i++) {
           message.push(payload[i].print)
         }
-        state.write_error_message = '내용을 모두 입력해주세요. ( ' + message.join(', ') + ' )'
+        state.errors.write.message = '내용을 모두 입력해주세요. ( ' + message.join(', ') + ' )'
       }
-      state.show_write_error_message = true
+      state.errors.write.show = true
     },
     closeErrorMessage (state) {
-      state.show_write_error_message = false
+      state.errors.write.show = false
     },
     setRemainWriteInfo (state, payload) {
       // 저장하기 전에 필요한 나머지 데이터들 추가해 주기.
@@ -396,14 +405,14 @@ export default {
       state.selected_write_city = []
       state.write_contents_data = []
       state.write_title_value = '제목을 입력하세요'
-      state.show_title_error_message = false
+      state.errors.title.show = false
       state.write_tag_value = '태그를 입력하세요'
-      state.show_tag_error_message = false
+      state.errors.tag.show = false
       state.title_img_url = ''
-      state.write_error_message = ''
-      state.show_write_error_message = false
+      state.errors.write.message = ''
+      state.errors.write.show = false
       state.error_check_before_post = {}
-      state.date_error_message = ''
+      state.errors.date.message = ''
       payload.start.value = ''
       payload.end.value = ''
     },
